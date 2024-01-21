@@ -1,0 +1,35 @@
+[tool.poetry]
+name = "miningvit api"
+version = "0.1.0"
+description = "MiningVit API"
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = {extras = ["all"], version = "^0.109.0"}
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.25"}
+alembic = "^1.13.1"
+aiomysql = "^0.2.0"
+python-dotenv = "^1.0.0"
+gunicorn = "^21.2.0"
+passlib = "^1.7.4"
+bcrypt = "^4.1.2"
+pyjwt = "^2.8.0"
+fastapi-mail = "^1.4.1"
+redis = "^5.0.1"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.4.4"
+pytest-asyncio = "^0.23.3"
+httpx = "^0.26.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+pythonpath = [
+    ".", "src"
+]
+ascyncio_mode="auto"

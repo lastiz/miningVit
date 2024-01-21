@@ -1,0 +1,59 @@
+services:
+  app:
+    build:
+      context: ./
+      dockerfile: ./api/Dockerfile
+    command: "sh -c 'alembic revision --autogenerate && alembic upgrade head && uvicorn asgi:app --host 0.0.0.0 --port 8000 --reload'"
+    restart: unless-stopped
+    ports:
+      - 8000:8000
+    networks:
+      - backend
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./api:/code
+  db:
+    image: mysql:latest
+    restart: unless-stopped
+    healthcheck:
+      test: "mysql -u root -p${MYSQL_ROOT_PASSWORD} -e 'select 1;'"
+      interval: 1s
+      retries: 50
+    volumes:
+      - ./db_data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_TCP_PORT=${MYSQL_TCP_PORT}
+    networks:
+      - backend
+    env_file:
+      - .env
+    ports:
+      - 5555:3306
+  redis:
+    image: redis:latest
+    restart: unless-stopped
+    healthcheck:
+      test: "redis-cli ping"
+      interval: 1s
+      retries: 50
+    volumes:
+      - ./redis_data:/root/redis
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_PORT=${REDIS_PORT}
+    networks:
+      - backend
+    env_file:
+      - .env
+
+networks:
+  backend:
+    driver: bridge
