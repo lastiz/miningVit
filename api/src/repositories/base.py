@@ -58,7 +58,7 @@ class GenericSqlRepository(GenericRepository[T], ABC):
         return record
 
     async def update(self, id: int, data: dict[str, Any]) -> T | None:
-        data.pop("id")
+        data.pop("id", None)
         stmt = update(self._model).filter_by(id=id).values(data)
         await self._session.execute(stmt)
         await self._session.flush()

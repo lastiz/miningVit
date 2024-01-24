@@ -11,9 +11,7 @@ from repositories.UserRepository import UserRepository
 from repositories.MasterReferralRepository import MasterReferralRepository
 
 
-DATABASE_URL: str = f"mysql+aiomysql://{settings.MYSQL_USER}:{settings.MYSQL_PASSWORD}@{settings.MYSQL_HOST}:{settings.MYSQL_TCP_PORT}/{settings.MYSQL_DATABASE}"
-
-engine: AsyncEngine = create_async_engine(DATABASE_URL)
+engine: AsyncEngine = create_async_engine(settings.DB_URL)
 async_session_maker = async_sessionmaker(
     bind=engine,
     expire_on_commit=False,

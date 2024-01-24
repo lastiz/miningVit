@@ -38,5 +38,9 @@ class Settings(BaseSettings):
 
     # APP SPECIFIC
 
+    @property
+    def DB_URL(self) -> str:
+        return f"mysql+aiomysql://{settings.MYSQL_USER}:{settings.MYSQL_PASSWORD}@{settings.MYSQL_HOST}:{settings.MYSQL_TCP_PORT}/{settings.MYSQL_DATABASE}"
+
 
 settings = Settings()

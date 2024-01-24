@@ -84,7 +84,6 @@ class TestSecurityHasher:
 
 
 class TestJWTAuthController:
-    
     @pytest.mark.parametrize(
         "data",
         [
@@ -98,14 +97,12 @@ class TestJWTAuthController:
             {
                 "username": None,
             },
-            {
-                "username": 123
-            }
-        ]
+            {"username": 123},
+        ],
     )
     def test_encode(self, data: dict[str, Any]):
         token = JWTAuthController.encode(**data)
-        splitted_token = token.split('.')
+        splitted_token = token.split(".")
         assert len(splitted_token) == 3
         for piece in splitted_token:
             assert isinstance(piece, str)
@@ -123,10 +120,8 @@ class TestJWTAuthController:
             {
                 "username": None,
             },
-            {
-                "username": 123
-            }
-        ]
+            {"username": 123},
+        ],
     )
     def test_decode(self, data: dict[str, Any]):
         token = JWTAuthController.encode(**data)

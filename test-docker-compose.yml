@@ -1,13 +1,13 @@
+name: miningvit-test
 services:
   app:
     container_name: app-test
     build:
       context: ./
       dockerfile: ./api/Dockerfile
-    command: "sh -c 'alembic revision --autogenerate && alembic upgrade head && uvicorn asgi:app --host 0.0.0.0 --port 8000 --reload'"
-    restart: unless-stopped
-    ports:
-      - 8000:8000
+      args:
+        - with_test=--with test
+    command: "sh -c 'pytest -v'"
     networks:
       - backend-test
     depends_on:
@@ -15,10 +15,10 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+
   db:
     container_name: db-test
     image: mysql:latest
-    restart: unless-stopped
     healthcheck:
       test: "mysql -u root -p${MYSQL_ROOT_PASSWORD} -e 'select 1;'"
       interval: 1s
@@ -33,12 +33,10 @@ services:
       - backend-test
     env_file:
       - .env
-    ports:
-      - 5555:3306
+
   redis:
     container_name: redis-test
     image: redis:latest
-    restart: unless-stopped
     healthcheck:
       test: "redis-cli ping"
       interval: 1s

@@ -1,4 +1,4 @@
-from fastapi.exceptions import RequestValidationError, HTTPException
+from fastapi.exceptions import RequestValidationError
 from fastapi import Request, status
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
@@ -6,7 +6,9 @@ from fastapi.encoders import jsonable_encoder
 from schemas.errors import ValidationErrorResponse, Error
 
 
-async def validation_exception_handler(request: Request, exc: RequestValidationError):
+async def validation_exception_handler(
+    request: Request, exc: RequestValidationError
+) -> JSONResponse:
     """
     Format the pydantic ValidationErrors in a more human-readable way.
     """

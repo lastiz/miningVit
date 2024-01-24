@@ -14,8 +14,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    volumes:
-      - ./api:/code
+    # volumes:
+    #   - ./api:/code
   db:
     image: mysql:latest
     restart: unless-stopped
@@ -23,8 +23,8 @@ services:
       test: "mysql -u root -p${MYSQL_ROOT_PASSWORD} -e 'select 1;'"
       interval: 1s
       retries: 50
-    volumes:
-      - ./db_data:/var/lib/mysql
+    # volumes:
+    #   - ./db_data:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
@@ -44,8 +44,8 @@ services:
       test: "redis-cli ping"
       interval: 1s
       retries: 50
-    volumes:
-      - ./redis_data:/root/redis
+    # volumes:
+    #   - ./redis_data:/root/redis
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - REDIS_PORT=${REDIS_PORT}
