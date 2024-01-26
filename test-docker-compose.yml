@@ -7,7 +7,7 @@ services:
       dockerfile: ./api/Dockerfile
       args:
         - with_test=--with test
-    command: "sh -c 'pytest -v'"
+    command: "sh -c 'pytest -v -s'"
     networks:
       - backend-test
     depends_on:
@@ -31,6 +31,8 @@ services:
       - MYSQL_TCP_PORT=${MYSQL_TCP_PORT}
     networks:
       - backend-test
+    ports:
+      - 5555:3306
     env_file:
       - .env
 
