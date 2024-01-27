@@ -86,7 +86,7 @@ class GenreicRedisRepository(ABC):
     async def close(self) -> None:
         if self._redis is None:
             raise ConnectionError("Redis connection had not be initialized")
-        await self._redis.close()
+        await self._redis.aclose()
 
     async def get(self, key: Any) -> Any | None:
         if self._redis is None:

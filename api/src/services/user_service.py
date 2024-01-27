@@ -11,7 +11,7 @@ from schemas.user import (
     MasterReferralSchema,
     UserToSaveSchema,
 )
-from schemas.email import EmailSchema, VerificationCode
+from schemas.email import EmailSchema
 from utils.security import SecurityHasher, JWTAuthController
 from utils.validation_errors import AppError, AppError
 from utils.specific import gen_rand_alphanum_str
@@ -110,18 +110,16 @@ class UserService:
         return registered_user
 
     @staticmethod
-    def create_verification_code() -> VerificationCode:
-        return VerificationCode(code=gen_rand_alphanum_str(5))
+    def create_verification_code() -> str:
+        return gen_rand_alphanum_str(5)
 
-    async def verify_user(
-        self, user: UserSchema, verification_code: VerificationCode
-    ) -> None:
+    async def verify_user(self, user: UserSchema, verification_code: str) -> None:
         if user.is_active:
             return
         saved_verification_code = await RedisService.get_verification_code_for_user(
             user.username
         )
-        if verification_code.code != saved_verification_code:
+        if verification_code != saved_verification_code:
             raise AppError.INVALID_VERIFICATION_CODE
         user.is_active = True
         await self.db.users.update(user.id, user.model_dump())

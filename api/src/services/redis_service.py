@@ -3,7 +3,6 @@ from datetime import timedelta
 
 from repositories.redis_repository import redis_repo
 from config import settings
-from schemas.user import VerificationCode
 
 
 class RedisService:
@@ -39,13 +38,11 @@ class RedisService:
         return await cls._repository.delete(key)
 
     @classmethod
-    async def save_verification_code_for_user(
-        cls, username: str, code: VerificationCode
-    ) -> bool:
+    async def save_verification_code_for_user(cls, username: str, code: str) -> bool:
         key = f"verify_key:{username}"
         return await cls._set(
             key=key,
-            value=code.code,
+            value=code,
             expire=cls._VERIFICATION_KEY_EXPIRE_AFTER,
         )
 

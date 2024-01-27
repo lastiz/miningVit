@@ -83,5 +83,5 @@ class ResultSchema(Base):
     result: str
 
 
-class VerificationCode(BaseModel):
-    code: Annotated[str, Field(min_length=5, max_length=5)]
+class VerificationCode(Base):
+    code: str

@@ -61,7 +61,7 @@ class EmailService:
             recipients=[data.user.email],
             template_body={
                 "username": data.user.username,
-                "verification_code": data.verification_code.code,
+                "verification_code": data.verification_code,
             },
             template_name="verification_email.html",
         )

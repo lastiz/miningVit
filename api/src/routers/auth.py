@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, BackgroundTasks
 from fastapi.security import OAuth2PasswordRequestForm
 
 from database.db import DB, get_db
-from schemas.user import ResetPasswordInSchema, TokenSchema, VerificationCode
+from schemas.user import ResetPasswordInSchema, TokenSchema
 from services.user_service import UserService
 from services.email_service import EmailService
 from services.redis_service import RedisService
@@ -12,6 +12,7 @@ from schemas.user import (
     RegisterUserOutSchema,
     UserSchema,
     ResultSchema,
+    VerificationCode,
 )
 from schemas.email import EmailVerificationSchema, EmailResetPasswordSchema
 from dependencies.auth import get_current_user
@@ -57,6 +58,8 @@ async def get_verification_code(
     current_user: Annotated[UserSchema, Depends(get_current_user)],
     background_tasks: BackgroundTasks,
 ) -> ResultSchema:
+    if current_user.is_active:
+        return ResultSchema(result="user already activated")
     await EmailService.check_email_allowed_and_emaillock(current_user)
     verification_code = UserService.create_verification_code()
     await RedisService.save_verification_code_for_user(
@@ -79,7 +82,7 @@ async def verify_user(
     current_user: Annotated[UserSchema, Depends(get_current_user)],
     db: Annotated[DB, Depends(get_db)],
 ) -> ResultSchema:
-    await UserService(db).verify_user(current_user, verification_code)
+    await UserService(db).verify_user(current_user, verification_code.code)
     await db.commit()
     return ResultSchema(result="user was activated")
 
@@ -108,4 +111,5 @@ async def reset_password(
 ) -> ResultSchema:
     await UserService.verify_reset_password_token(data.email, data.reset_token)
     await UserService(db).reset_password(data.email, data.password)
+    await db.commit()
     return ResultSchema(result="Password was updated")

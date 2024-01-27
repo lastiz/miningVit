@@ -1,6 +1,6 @@
 from pydantic import EmailStr, BaseModel
 
-from schemas.user import VerificationCode, UserSchema
+from schemas.user import UserSchema
 
 
 class EmailSchema(BaseModel):
@@ -13,7 +13,7 @@ class EmailsSchema(BaseModel):
 
 class EmailVerificationSchema(BaseModel):
     user: UserSchema
-    verification_code: VerificationCode
+    verification_code: str
 
 
 class EmailResetPasswordSchema(BaseModel):
