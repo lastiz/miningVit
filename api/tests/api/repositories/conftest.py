@@ -23,6 +23,7 @@ async def create_referrals_for_master(session: AsyncSession, master: User, count
             "email": f"user{master.affiliate_code}{i}@user.com",
             "password_hash": "test_password_hash",
             "affiliate_code": f"{master.affiliate_code}{i}",
+            "ip_address": "127.0.0.1",
         }
         referral = await save_referral(session, master, referral_data)
         referrals.append(referral)
@@ -38,18 +39,21 @@ async def create_users(setup_db):
                 "email": "admin1@admin.com",
                 "password_hash": "test_password_hash",
                 "affiliate_code": "1",
+                "ip_address": "127.0.0.1",
             },
             {
                 "username": "admin2",
                 "email": "admin2@admin.com",
                 "password_hash": "test_password_hash",
                 "affiliate_code": "2",
+                "ip_address": "127.0.0.1",
             },
             {
                 "username": "admin3",
                 "email": "admin3@admin.com",
                 "password_hash": "test_password_hash",
                 "affiliate_code": "3",
+                "ip_address": "127.0.0.1",
             },
         ]
 

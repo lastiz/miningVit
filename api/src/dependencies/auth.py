@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import Depends
+from fastapi import Depends, Request
 from fastapi.security import OAuth2PasswordBearer
 from jwt import PyJWTError
 
@@ -14,6 +14,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
 
 
 async def get_current_user(
+    request: Request,
     db: Annotated[DB, Depends(get_db)],
     token: Annotated[str, Depends(oauth2_scheme)],
 ) -> user_schema.UserSchema:
@@ -27,6 +28,7 @@ async def get_current_user(
     user = await UserService(db).get_user_by_name(username=username)
     if user is None:
         raise AppError.INVALID_CREDENTIALS
+    user = await UserService(db).update_online_and_ip(user, request)
     return user
 
 

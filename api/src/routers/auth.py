@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, BackgroundTasks
+from fastapi import APIRouter, Depends, BackgroundTasks, Request
 from fastapi.security import OAuth2PasswordRequestForm
 
 from database.db import DB, get_db
@@ -33,12 +33,13 @@ async def login_for_token(
 
 @router.post("/register", status_code=201)
 async def registration(
+    request: Request,
     register_data: RegisterUserInSchema,
     background_tasks: BackgroundTasks,
     db: Annotated[DB, Depends(get_db)],
 ) -> RegisterUserOutSchema:
     user_service = UserService(db)
-    user = await user_service.register_user(register_data)
+    user = await user_service.register_user(register_data, request)
     await db.commit()
     await EmailService.check_email_allowed_and_emaillock(user)
     verification_code = user_service.create_verification_code()

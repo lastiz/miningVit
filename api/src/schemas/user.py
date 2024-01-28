@@ -1,4 +1,6 @@
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from datetime import datetime
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, IPvAnyAddress
+from ipaddress import IPv4Address
 from typing import Annotated
 
 
@@ -25,7 +27,10 @@ class RegisterUserOutSchema(Base):
 
     username: str
     email: EmailStr
+    email_allowed: bool
     affiliate_code: str
+    is_active: bool
+    ip_address: IPv4Address | None
 
 
 class UserSchema(Base):
@@ -37,9 +42,13 @@ class UserSchema(Base):
     email_allowed: bool
     telegram: str | None
     password_hash: str
+    affiliate_code: str
     is_admin: bool
     is_active: bool
-    affiliate_code: str
+    ip_address: IPv4Address | None
+    last_online: datetime
+    created_at: datetime
+    updated_at: datetime
     note: str | None
 
 
@@ -50,10 +59,8 @@ class UserToSaveSchema(Base):
     email: str
     telegram: str | None = None
     password_hash: str
-    is_admin: bool = False
-    is_active: bool = False
     affiliate_code: str
-    note: str | None = None
+    ip_address: IPv4Address | None
 
 
 class TokenSchema(Base):

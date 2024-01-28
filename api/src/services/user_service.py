@@ -1,7 +1,10 @@
+from datetime import datetime
+from fastapi import Request
 from fastapi.exceptions import RequestValidationError
 from typing import TypedDict
 
 from pydantic import ValidationError
+from ipaddress import IPv4Address
 
 from database.db import DB
 from schemas.user import (
@@ -25,6 +28,14 @@ class UserService:
     def __init__(self, db: DB):
         self.db = db
 
+    async def update_online_and_ip(
+        self, user: UserSchema, request: Request
+    ) -> UserSchema:
+        user.ip_address = IPv4Address(request.client.host) if request.client else None
+        user.last_online = datetime.utcnow()
+        updated_user = await self.db.users.update(user.id, user.model_dump())
+        return UserSchema.model_validate(updated_user)
+
     async def get_user_by_name(self, username: str) -> UserSchema | None:
         db_user = await self.db.users.get_by_name(username)
         if db_user is None:
@@ -37,11 +48,10 @@ class UserService:
         except ValidationError:
             raise AppError.EMAIL_NOT_REGISTERED
 
-        async with DB() as uow:
-            db_user = await uow.users.get_by_email(validated_email)
-            if db_user is None:
-                raise AppError.EMAIL_NOT_REGISTERED
-            user = UserSchema.model_validate(db_user)
+        db_user = await self.db.users.get_by_email(validated_email)
+        if db_user is None:
+            raise AppError.EMAIL_NOT_REGISTERED
+        user = UserSchema.model_validate(db_user)
         return user
 
     async def authenticate_user(self, username: str, password: str) -> UserSchema:
@@ -70,7 +80,9 @@ class UserService:
             tries -= 1
         raise AppError.GENERATING_AFFILIATE_CODE_FAILS
 
-    async def register_user(self, register_data: RegisterUserInSchema) -> UserSchema:
+    async def register_user(
+        self, register_data: RegisterUserInSchema, request: Request
+    ) -> UserSchema:
         """Creates user in DB
 
         Args:
@@ -96,12 +108,14 @@ class UserService:
         if errors:
             raise RequestValidationError(errors=errors)
 
-        user_to_save = UserToSaveSchema(
-            **register_data.model_dump(),
+        user_ip = request.client.host if request.client else None
+        user_data = dict(
             affiliate_code=await self.create_affiliate_code(),
             password_hash=SecurityHasher.get_password_hash(register_data.password),
+            ip_address=user_ip,
+            **register_data.model_dump(),
         )
-
+        user_to_save = UserToSaveSchema.model_validate(user_data)
         registered_user = UserSchema.model_validate(
             await self.db.users.add(user_to_save.model_dump())
         )
