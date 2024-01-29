@@ -54,14 +54,16 @@ class UserService:
         user = UserSchema.model_validate(db_user)
         return user
 
-    async def authenticate_user(self, username: str, password: str) -> UserSchema:
+    async def authenticate_user(self, username: str, password: str) -> TokenSchema:
         user = await self.get_user_by_name(username)
         if user is None:
             raise AppError.INVALID_CREDENTIALS
 
         if not SecurityHasher.verify_password(password, user.password_hash):
             raise AppError.INVALID_CREDENTIALS
-        return user
+        token = self.create_auth_token(user)
+        await RedisService.add_active_session(user.username, token.access_token)
+        return token
 
     def create_auth_token(self, user: UserSchema) -> TokenSchema:
         token = JWTAuthController.encode(username=user.username)

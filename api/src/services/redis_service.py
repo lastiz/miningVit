@@ -15,6 +15,9 @@ class RedisService:
     _RESET_PASSWORD_TOKEN_EXPIRE_HOURS: int = int(
         timedelta(hours=settings.RESET_PASSWORD_TOKEN_EXPIRE_HOURS).total_seconds()
     )
+    _AUTH_SESSION_TIME: int = int(
+        timedelta(settings.ACCESS_TOKEN_EXPIRE_DAYS).total_seconds()
+    )
     _repository = redis_repo
 
     @classmethod
@@ -78,3 +81,18 @@ class RedisService:
     async def delete_reset_password_token(cls, email: str) -> bool:
         key = f"reset_password_token:{email}"
         return await cls._delete(key)
+
+    @classmethod
+    async def add_active_session(cls, username: str, token: str) -> int | Any:
+        key = f"active_session:{username}"
+        return await cls._set(key, token, expire=cls._AUTH_SESSION_TIME)
+
+    @classmethod
+    async def get_active_session(cls, username: str) -> str | None:
+        key = f"active_session:{username}"
+        return await cls._get(key)
+
+    @classmethod
+    async def del_active_session(cls, username: str) -> int | Any:
+        key = f"active_session:{username}"
+        return await cls._repository.delete(key)

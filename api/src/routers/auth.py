@@ -27,8 +27,8 @@ async def login_for_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
 ) -> TokenSchema:
     user_service = UserService(db)
-    user = await user_service.authenticate_user(form_data.username, form_data.password)
-    return user_service.create_auth_token(user)
+    token = await user_service.authenticate_user(form_data.username, form_data.password)
+    return token
 
 
 @router.post("/register", status_code=201)

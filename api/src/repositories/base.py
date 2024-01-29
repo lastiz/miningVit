@@ -102,3 +102,23 @@ class GenreicRedisRepository(ABC):
         if self._redis is None:
             raise ConnectionError("Redis connection had not be initialized")
         return await self._redis.delete(key)
+
+    async def hset(self, name: Any, key: Any, value: Any) -> int | Any:
+        if self._redis is None:
+            raise ConnectionError("Redis connection had not be initialized")
+        return await self._redis.hset(name, key, value)  # type: ignore
+
+    async def hdel(self, name: Any, *keys: Any) -> int | Any:
+        if self._redis is None:
+            raise ConnectionError("Redis connection had not be initialized")
+        return await self._redis.hdel(name, *keys)  # type: ignore
+
+    async def sadd(self, name: Any, *values: Any) -> int | Any:
+        if self._redis is None:
+            raise ConnectionError("Redis connection had not be initialized")
+        return await self._redis.sadd(name, *values)  # type: ignore
+
+    async def srem(self, name: Any, *values: Any) -> int | Any:
+        if self._redis is None:
+            raise ConnectionError("Redis connection had not be initialized")
+        return await self._redis.sadd(name, *values)  # type: ignore
