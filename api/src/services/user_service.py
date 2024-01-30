@@ -66,6 +66,10 @@ class UserService:
         await RedisService.add_active_session(user.username, token.access_token)
         return token
 
+    @classmethod
+    async def logout_user(cls, user: UserSchema) -> None:
+        await RedisService.del_active_session(user.username)
+
     def create_auth_token(self, user: UserSchema) -> TokenSchema:
         token = JWTAuthController.encode(username=user.username)
         return TokenSchema(access_token=token, token_type="bearer")

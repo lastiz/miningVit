@@ -31,6 +31,14 @@ async def login_for_token(
     return token
 
 
+@router.get("/logout")
+async def logout(
+    current_user: Annotated[UserSchema, Depends(get_current_user)],
+) -> ResultSchema:
+    await UserService.logout_user(current_user)
+    return ResultSchema(result="successful logout")
+
+
 @router.post("/register", status_code=201)
 async def registration(
     request: Request,

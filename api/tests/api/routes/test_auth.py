@@ -1,3 +1,4 @@
+from typing import Callable
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -278,3 +279,28 @@ async def test_reset_password_POST(
         user = await user_repository.get_by_email(email)
         assert user
         assert SecurityHasher.verify_password(password, user.password_hash)
+
+
+@pytest.mark.parametrize(
+    "username, password, status_code",
+    [
+        ("registeruser1", "password1", 200),
+        ("registeruser2", "test_password", 200),
+    ],
+)
+async def test_logout(
+    client: TestClient,
+    login: Callable[[TestClient, str, str], None | str],
+    username: str,
+    password: str,
+    status_code: int,
+):
+    token = login(client, username, password)
+    assert not (token is None)
+    response = client.get(
+        url="/auth/logout",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == status_code
+    if status_code == 200:
+        assert response.json()["result"] == "successful logout"
