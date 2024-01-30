@@ -13,6 +13,7 @@ from schemas.user import (
     TokenSchema,
     MasterReferralSchema,
     UserToSaveSchema,
+    ChangePasswordSchema,
 )
 from schemas.email import EmailSchema
 from utils.security import SecurityHasher, JWTAuthController
@@ -163,3 +164,21 @@ class UserService:
         user.password_hash = SecurityHasher.get_password_hash(password)
         user = await self.db.users.update(user.id, user.model_dump())
         return UserSchema.model_validate(user)
+
+    async def change_password(
+        self, user: UserSchema, change_password_schema: ChangePasswordSchema
+    ) -> UserSchema:
+        if not SecurityHasher.verify_password(
+            change_password_schema.password,
+            user.password_hash,
+        ):
+            raise AppError.INVALID_PASSWORD
+
+        new_password_hash = SecurityHasher.get_password_hash(
+            change_password_schema.new_password
+        )
+        updated_user = await self.db.users.update(
+            user.id, data={"password_hash": new_password_hash}
+        )
+        await RedisService.del_active_session(user.username)
+        return UserSchema.model_validate(updated_user)

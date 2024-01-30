@@ -95,3 +95,19 @@ class AppError:
             code=1008,
         ),
     )
+    FAILED_TO_UPDATE_USER = HTTPException(
+        status_code=500,
+        detail=HTTPErrorDetails(
+            location="server",
+            message="Failed to update user",
+            code=1009,
+        ),
+    )
+    INVALID_PASSWORD = HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail=HTTPErrorDetails(
+            location="password",
+            message="invalid current password",
+            code=1010,
+        ),
+    )

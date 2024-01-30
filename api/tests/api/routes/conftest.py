@@ -14,7 +14,7 @@ def mock_security_hasher(monkeypatch):
 
 @pytest.fixture
 def login():
-    def _login(client: TestClient, username: str, password: str) -> str:
+    def _login(client: TestClient, username: str, password: str) -> str | None:
         response = client.post(
             "/auth/token",
             data={
@@ -22,6 +22,8 @@ def login():
                 "password": password,
             },
         )
+        if not response.status_code in (200, 201):
+            return None
         token: str = response.json()["access_token"]
         return token
 

@@ -11,7 +11,7 @@ sys.path.append(str(Path(".").resolve() / "src"))
 # TODO: fix import problems ---------------------------------
 
 from routers.auth import router as auth_router
-from config import settings
+from routers.user import router as user_router
 from dependencies.auth import get_current_user
 from schemas.user import UserSchema
 from schemas.errors import ValidationErrorResponse
@@ -37,6 +37,7 @@ app = FastAPI(
 )
 
 app.include_router(auth_router, prefix="/auth")
+app.include_router(user_router, prefix="/api/user")
 
 
 @app.get("/")

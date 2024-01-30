@@ -1,16 +1,20 @@
 from datetime import datetime
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, IPvAnyAddress
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 from ipaddress import IPv4Address
 from typing import Annotated
 
 
-_USERNAME_PATTERN = r"^[a-zA-Z]{1}[a-zA-Z0-9]{3,14}$"
+_USERNAME_PATTERN = r"^[a-zA-Z]{3}[a-zA-Z0-9]{1,12}$"
 
 
 class Base(BaseModel):
     """Base Pydantic Model"""
 
-    model_config = ConfigDict(from_attributes=True, extra="ignore")
+    model_config = ConfigDict(
+        from_attributes=True,
+        extra="ignore",
+        validate_assignment=True,
+    )
 
 
 class RegisterUserInSchema(Base):
@@ -52,6 +56,18 @@ class UserSchema(Base):
     note: str | None
 
 
+class UserInfoSchema(Base):
+    username: str
+    email: str
+    email_allowed: bool
+    telegram: str | None
+    affiliate_code: str
+    is_active: bool
+    ip_address: IPv4Address | None
+    created_at: datetime
+    updated_at: datetime
+
+
 class UserToSaveSchema(Base):
     """Pydantic Model represents user record to save in DB"""
 
@@ -61,6 +77,11 @@ class UserToSaveSchema(Base):
     password_hash: str
     affiliate_code: str
     ip_address: IPv4Address | None
+
+
+class ChangePasswordSchema(Base):
+    password: str
+    new_password: Annotated[str, Field(min_length=6, max_length=16)]
 
 
 class TokenSchema(Base):
@@ -84,10 +105,6 @@ class MasterReferralSchema(Base):
 
     master_id: int
     referral_id: int
-
-
-class ResultSchema(Base):
-    result: str
 
 
 class VerificationCode(Base):

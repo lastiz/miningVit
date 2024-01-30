@@ -11,9 +11,9 @@ from schemas.user import (
     RegisterUserInSchema,
     RegisterUserOutSchema,
     UserSchema,
-    ResultSchema,
     VerificationCode,
 )
+from schemas.common import ResultSchema
 from schemas.email import EmailVerificationSchema, EmailResetPasswordSchema
 from dependencies.auth import get_current_user
 

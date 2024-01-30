@@ -1,4 +1,4 @@
-from typing import Sequence
+from typing import Sequence, Any
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, desc
 
@@ -9,6 +9,11 @@ from database.models import User, MasterReferral
 class UserRepository(GenericSqlRepository[User]):
     def __init__(self, session: AsyncSession) -> None:
         super().__init__(session, User)
+
+    async def update(self, id: int, data: dict[str, Any]) -> User | None:
+        data.pop("created_at", None)
+        data.pop("updated_at", None)
+        return await super().update(id, data)
 
     async def get_by_name(self, username: str) -> User | None:
         stmt = select(User).where(User.username == username)

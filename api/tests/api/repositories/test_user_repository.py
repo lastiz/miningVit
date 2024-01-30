@@ -144,34 +144,33 @@ class TestUserRepository:
         await session.commit()
         assert await user_repository.get_by_id(user_id) is None
 
-    async def test_update(self, session):
+    async def test_update(self, session: AsyncSession):
         user_repository = UserRepository(session)
-        user_to_update = await user_repository.add(
-            {
-                "username": "to_update_user",
-                "email": "to_update_user@test.com",
-                "password_hash": "test_password_hash",
-                "affiliate_code": "123123123",
-            }
-        )
+        initial_user_data = {
+            "username": "to_update_user",
+            "email": "to_update_user@test.com",
+            "password_hash": "test_password_hash",
+            "affiliate_code": "123123123",
+        }
+        user = await user_repository.add(initial_user_data)
         await session.commit()
-        user = await user_repository.update(
-            id=user_to_update.id,
-            data={
-                "email": "to_update_user_updated@gmail.com",
-                "username": "updated_user",
+        import time
+
+        time.sleep(5)
+        old_field_updated_at = user.updated_at
+        await user_repository.update(
+            user.id,
+            {
+                "username": "updated_username",
+                "email": "updated_email@test.com",
+                "updated_at": user.updated_at,
             },
         )
-        assert user
         await session.commit()
-        updated_user = await user_repository.get_by_id(user.id)
-        assert updated_user
-        assert user_to_update.email == updated_user.email
-        assert user_to_update.username == updated_user.username
-        assert user_to_update.id == updated_user.id
-        some_user = await user_repository.get_by_id(2)
-        assert some_user
-        assert updated_user.username != some_user.username
+        assert user
+        assert user.email == "updated_email@test.com"
+        assert user.username == "updated_username"
+        assert user.updated_at > old_field_updated_at
 
     async def test_get_by_id(self, session):
         user_repository = UserRepository(session)
@@ -181,9 +180,9 @@ class TestUserRepository:
 
     async def test_get_by_email(self, session):
         user_repository = UserRepository(session)
-        user = await user_repository.get_by_email("to_update_user_updated@gmail.com")
+        user = await user_repository.get_by_email("admin1@admin.com")
         assert user
-        assert user.email == "to_update_user_updated@gmail.com"
+        assert user.email == "admin1@admin.com"
 
     async def test_get_by_username(self, session):
         user_repository = UserRepository(session)
