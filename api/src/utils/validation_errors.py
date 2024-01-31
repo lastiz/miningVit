@@ -111,3 +111,13 @@ class AppError:
             code=1010,
         ),
     )
+
+    # FINANCE ERRORS
+    COULD_NOT_GET_FINANCE = HTTPException(
+        status_code=500,
+        detail=HTTPErrorDetails(
+            location="server",
+            message="Failed to load user finance",
+            code=1011,
+        ),
+    )

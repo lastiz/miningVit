@@ -125,8 +125,11 @@ class UserService:
         registered_user = UserSchema.model_validate(
             await self.db.users.add(user_to_save.model_dump())
         )
+        # Adding master_referral association (current user is a referral for master user)
         master_referral_record = MasterReferralSchema(master_id=master.id, referral_id=registered_user.id)  # type: ignore
         await self.db.master_referrals.add(master_referral_record.model_dump())
+        # Adding finance row for current user
+        await self.db.finance.add({"user_id": registered_user.id})
         return registered_user
 
     @staticmethod
