@@ -8,11 +8,11 @@ from dependencies.auth import get_current_active_user, get_current_user
 from services.user_service import UserService
 
 
-router = APIRouter(tags=["Authorization/Registration"])
+router = APIRouter(tags=["User operations"])
 
 
 @router.get("")
-async def get_user(
+async def get_user_info(
     current_user: Annotated[UserSchema, Depends(get_current_user)],
 ) -> UserInfoSchema:
     return UserInfoSchema.model_validate(current_user)

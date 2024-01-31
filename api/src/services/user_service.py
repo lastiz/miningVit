@@ -17,10 +17,9 @@ from schemas.user import (
 )
 from schemas.email import EmailSchema
 from utils.security import SecurityHasher, JWTAuthController
-from utils.validation_errors import AppError, AppError
+from utils.validation_errors import AppError
 from utils.specific import gen_rand_alphanum_str
 from services.redis_service import RedisService
-from utils.validation_errors import AppError
 
 
 class UserService:

@@ -3,6 +3,7 @@ from contextlib import nullcontext as does_not_raise
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+import time
 
 from src.repositories.UserRepository import UserRepository
 from src.database.models import User
@@ -154,9 +155,7 @@ class TestUserRepository:
         }
         user = await user_repository.add(initial_user_data)
         await session.commit()
-        import time
-
-        time.sleep(5)
+        time.sleep(1)
         old_field_updated_at = user.updated_at
         await user_repository.update(
             user.id,
