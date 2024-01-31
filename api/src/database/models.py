@@ -65,7 +65,7 @@ class User(TimeMixin, Base):
     note: Mapped[str | None] = mapped_column(String(1024))
 
     # ADDITIONAL RELATIONSHIPS
-    balance: Mapped["Finance"] = relationship(
+    finance: Mapped["Finance"] = relationship(
         back_populates="user",
         cascade="all, delete",
         passive_deletes=True,
@@ -82,12 +82,16 @@ class Finance(Base):
     __repr_attrs__ = ["id", "user_id", "machine_id", "activated_time"]
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    balance: Mapped[int] = mapped_column(BIGINT(unsigned=True))
-    income: Mapped[int] = mapped_column(BIGINT(unsigned=True))
-    affiliate_income: Mapped[int] = mapped_column(BIGINT(unsigned=True))
+    balance: Mapped[int] = mapped_column(
+        BIGINT(unsigned=True), server_default=text("0")
+    )
+    income: Mapped[int] = mapped_column(BIGINT(unsigned=True), server_default=text("0"))
+    affiliate_income: Mapped[int] = mapped_column(
+        BIGINT(unsigned=True), server_default=text("0")
+    )
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
 
-    user: Mapped["User"] = relationship(back_populates="balance")
+    user: Mapped["User"] = relationship(back_populates="finance")
     deposits: Mapped[list["Deposit"]] = relationship(
         back_populates="finance",
         cascade="all, delete",
