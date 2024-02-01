@@ -63,7 +63,6 @@ class GenericSqlRepository(GenericRepository[T], ABC):
         await self._session.execute(stmt)
         await self._session.flush()
         record = await self.get_by_id(id=id)
-        await self._session.refresh(record)
         return record
 
     async def delete(self, id: int) -> None:

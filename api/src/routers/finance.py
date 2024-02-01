@@ -40,7 +40,7 @@ async def get_user_withdrawals(
     return await FinanceService(db).get_user_withdrawals(current_user)
 
 
-@router.get("/incomes")
+@router.get("/income")
 async def get_user_incomes(
     current_user: Annotated[UserSchema, Depends(get_current_active_user)],
     db: Annotated[DB, Depends(get_db)],

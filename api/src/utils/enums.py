@@ -1,13 +1,15 @@
-from enum import Enum
+import enum
 
 
-class TransactionStatus(Enum):
+@enum.unique
+class TransactionStatus(str, enum.Enum):
     NEW = "new"
     PENDING = "pending"
     COMPLETED = "completed"
 
 
-class IncomeType(Enum):
+@enum.unique
+class IncomeType(str, enum.Enum):
     BONUS = "bonus"
     AFFILIATE = "affiliate"
     M1 = "m1"

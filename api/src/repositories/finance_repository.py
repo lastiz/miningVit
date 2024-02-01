@@ -1,7 +1,7 @@
 from typing import Any
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from sqlalchemy.orm import raiseload
+from sqlalchemy.orm import raiseload, selectinload
 
 from .base import GenericSqlRepository
 from database.models import Finance, Deposit, Withdrawal, Income
@@ -16,30 +16,35 @@ class FinanceRepository(GenericSqlRepository[Finance]):
         stmt = select(Finance).filter_by(user_id=user_id).options(raiseload("*"))
         return await self._session.scalar(stmt)
 
-    async def get_user_deposits(self, user_id: int) -> list[Deposit]:
-        stmt = select(Finance.deposits).filter_by(user_id=user_id)
+    async def get_user_finance_with(
+        self, user_id: int, with_: str = "all"
+    ) -> Finance | None:
+        stmt = select(Finance).filter_by(user_id=user_id)
+        if with_ == "all":
+            stmt = stmt.options(
+                selectinload(Finance.deposits, Finance.withdrawals, Finance.incomes)
+            )
+        else:
+            stmt = stmt.options(selectinload(getattr(Finance, with_)))
+        return await self._session.scalar(stmt)
 
-        deposits = await self._session.scalar(stmt)
-        if deposits is None:
-            return []
+    async def get_user_deposits(self, user_id: int) -> list[Deposit]:
+        stmt = select(Deposit).join(Finance).filter(Finance.user_id == user_id)
+        deposits = list(await self._session.scalars(stmt))
         return deposits
 
     async def get_user_withdrawals(self, user_id: int) -> list[Withdrawal]:
-        stmt = select(Finance.withdrawals).filter_by(user_id=user_id)
-        withdrawals = await self._session.scalar(stmt)
-        if withdrawals is None:
-            return []
+        stmt = select(Withdrawal).join(Finance).filter(Finance.user_id == user_id)
+        withdrawals = list(await self._session.scalars(stmt))
         return withdrawals
 
     async def get_user_incomes(self, user_id: int) -> list[Income]:
-        stmt = select(Finance.incomes).filter_by(user_id=user_id)
-        incomes = await self._session.scalar(stmt)
-        if incomes is None:
-            return []
+        stmt = select(Income).join(Finance).filter(Finance.user_id == user_id)
+        incomes = list(await self._session.scalars(stmt))
         return incomes
 
     async def add_user_deposit(self, user_id: int, data: dict[str, Any]):
-        user_finance = await self.get_user_finance(user_id)
+        user_finance = await self.get_user_finance_with(user_id, with_="deposits")
         if user_finance is None:
             raise AppError.COULD_NOT_GET_FINANCE
 
@@ -47,7 +52,7 @@ class FinanceRepository(GenericSqlRepository[Finance]):
         await self._session.flush()
 
     async def add_user_income(self, user_id: int, data: dict[str, Any]):
-        user_finance = await self.get_user_finance(user_id)
+        user_finance = await self.get_user_finance_with(user_id, with_="incomes")
         if user_finance is None:
             raise AppError.COULD_NOT_GET_FINANCE
 
@@ -55,7 +60,7 @@ class FinanceRepository(GenericSqlRepository[Finance]):
         await self._session.flush()
 
     async def add_user_withdrawal(self, user_id: int, data: dict[str, Any]):
-        user_finance = await self.get_user_finance(user_id)
+        user_finance = await self.get_user_finance_with(user_id, with_="withdrawals")
         if user_finance is None:
             raise AppError.COULD_NOT_GET_FINANCE
 
