@@ -169,6 +169,7 @@ class TestUserRepository:
         assert user
         assert user.email == "updated_email@test.com"
         assert user.username == "updated_username"
+        assert user.updated_at > old_field_updated_at
 
     async def test_get_by_id(self, session):
         user_repository = UserRepository(session)
