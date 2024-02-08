@@ -7,6 +7,7 @@ from schemas.finance import (
     WithdrawalsSchema,
     IncomesSchema,
 )
+from schemas.machine import MachineSchema
 from utils.validation_errors import AppError
 
 

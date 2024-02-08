@@ -1,5 +1,4 @@
-from typing import Annotated
-from fastapi import Depends, FastAPI
+from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from contextlib import asynccontextmanager
 
@@ -13,16 +12,19 @@ sys.path.append(str(Path(".").resolve() / "src"))
 from routers.auth import router as auth_router
 from routers.user import router as user_router
 from routers.finance import router as finance_router
-from dependencies.auth import get_current_user
-from schemas.user import UserSchema
+from routers.machine import router as machine_router
 from schemas.errors import ValidationErrorResponse
 from utils.error_handlers import validation_exception_handler
 from services.redis_service import RedisService
+from utils import initiate_data
+from config import settings
 
 
 # REDIS INIT
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    await initiate_data.initiate_machines()
+    await initiate_data.initiate_admin()
     await RedisService.init()
     yield
     await RedisService.close()
@@ -40,13 +42,9 @@ app = FastAPI(
 app.include_router(auth_router, prefix="/auth")
 app.include_router(user_router, prefix="/api/user")
 app.include_router(finance_router, prefix="/api/finance")
+app.include_router(machine_router, prefix="/api/machine")
 
 
 @app.get("/")
-async def tset(current_user: Annotated[UserSchema, Depends(get_current_user)]):
-    return f"{id(app)}lololol"
-
-
-@app.get("/lol")
-async def lol(current_user: Annotated[UserSchema, Depends(get_current_user)]):
-    return f"value = "
+async def test():
+    return settings.model_dump()

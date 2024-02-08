@@ -21,3 +21,16 @@ class IncomeType(str, enum.Enum):
     M7 = "m7"
     M8 = "m8"
     M9 = "m9"
+
+
+@enum.unique
+class MachineCoin(str, enum.Enum):
+    LTC = "LTC"
+    ETC = "ETC"
+    PIRL = "PIRL"
+    BTC = "BTC"
+    ZEN = "ZEN"
+    ZEC = "ZEC"
+    BTCD = "BTCD"
+    PPC = "PPC"
+    BCX = "BCX"

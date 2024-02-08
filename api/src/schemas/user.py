@@ -1,20 +1,12 @@
 from datetime import datetime
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import EmailStr, Field
 from ipaddress import IPv4Address
 from typing import Annotated
 
+from .base import Base
+
 
 _USERNAME_PATTERN = r"^[a-zA-Z]{3}[a-zA-Z0-9]{1,12}$"
-
-
-class Base(BaseModel):
-    """Base Pydantic Model"""
-
-    model_config = ConfigDict(
-        from_attributes=True,
-        extra="ignore",
-        validate_assignment=True,
-    )
 
 
 class RegisterUserInSchema(Base):

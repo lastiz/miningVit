@@ -1,6 +1,7 @@
 __pycache__/
 .env
 .venv/
+.vscode/
 redis_data
 db_data
 .pytest_cache

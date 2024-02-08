@@ -11,7 +11,7 @@ from sqlalchemy.sql import func, text, false, true
 from datetime import datetime
 
 from utils.repr import ReprMixin
-from utils.enums import TransactionStatus, IncomeType
+from utils.enums import TransactionStatus, IncomeType, MachineCoin
 
 
 class Base(ReprMixin, DeclarativeBase):
@@ -110,12 +110,13 @@ class Finance(Base):
 
 
 class Machine(Base):
-    __repr_attrs__ = ["id", "title", "coin", "income"]
+    __repr_attrs__ = ["id", "title", "coin", "income", "price"]
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(String(64))
-    coin: Mapped[str] = mapped_column(String(16))
-    income: Mapped[int]
+    title: Mapped[str] = mapped_column(String(64), unique=True)
+    coin: Mapped[MachineCoin] = mapped_column(unique=True, index=True)
+    income: Mapped[int] = mapped_column(BIGINT(unsigned=True))
+    price: Mapped[int] = mapped_column(BIGINT(unsigned=True))
 
     purchased: Mapped[list["PurchasedMachine"]] = relationship(
         back_populates="machine",
@@ -128,8 +129,9 @@ class PurchasedMachine(TimeMixin, Base):
     __tablename__: declared_attr | str = "purchased_machine"
     __repr_attrs__ = ["user_id", "machine_id", "activated_time"]
 
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"), primary_key=True)
-    machine_id: Mapped[int] = mapped_column(ForeignKey("machine.id"), primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    machine_id: Mapped[int] = mapped_column(ForeignKey("machine.id"))
     activated_time: Mapped[datetime | None] = mapped_column(DateTime)
 
     machine: Mapped["Machine"] = relationship(back_populates="purchased")

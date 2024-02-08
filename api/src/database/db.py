@@ -8,6 +8,7 @@ from config import settings
 from repositories.UserRepository import UserRepository
 from repositories.MasterReferralRepository import MasterReferralRepository
 from repositories.finance_repository import FinanceRepository
+from repositories.machine_repository import MachineRepository
 
 
 engine: AsyncEngine = create_async_engine(settings.DB_URL)
@@ -28,6 +29,7 @@ class DB:
         self.users = UserRepository(self._session)
         self.master_referrals = MasterReferralRepository(self._session)
         self.finance = FinanceRepository(self._session)
+        self.machines = MachineRepository(self._session)
         return self
 
     async def __aexit__(self, *args) -> None:

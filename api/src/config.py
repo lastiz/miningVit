@@ -37,6 +37,67 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_DAYS: int = 30
 
     # APP SPECIFIC
+    ADMIN_NAME: str = "admin"
+    ADMIN_EMAIL: str = "admin@admin.com"
+    ADMIN_PASSWORD: str = "admin"
+    ADMIN_AFFILIATE_CODE: str = "0000000000"
+    COMMISSION_HOURS_DELTA: int = 24
+    MACHINES_INFO: list[dict[str, str | int]] = [
+        {
+            "title": "Bitmain Antminer L7",
+            "coin": "LTC",
+            "income": 25000,
+            "price": 400000,
+        },
+        {
+            "title": "Bitmain Antminer E9 Pro",
+            "coin": "ETC",
+            "income": 15000,
+            "price": 300000,
+        },
+        {
+            "title": "Bitmain Antminer E9",
+            "coin": "PIRL",
+            "income": 10000,
+            "price": 200000,
+        },
+        {
+            "title": "Bitmain Antminer S19k Pro",
+            "coin": "BTC",
+            "income": 4000,
+            "price": 100000,
+        },
+        {
+            "title": "Bitmain Antminer Z15 Pro",
+            "coin": "ZEN",
+            "income": 2000,
+            "price": 50000,
+        },
+        {
+            "title": "Bitmain Antminer Z15",
+            "coin": "ZEC",
+            "income": 1200,
+            "price": 30000,
+        },
+        {
+            "title": "MicroBT Whatsminer M50",
+            "coin": "BTCD",
+            "income": 400,
+            "price": 10000,
+        },
+        {
+            "title": "Bitmain Antminer S19j Pro",
+            "coin": "PPC",
+            "income": 120,
+            "price": 3600,
+        },
+        {
+            "title": "MicroBT Whatsminer M30S",
+            "coin": "BCX",
+            "income": 40,
+            "price": 1200,
+        },
+    ]
 
     @property
     def DB_URL(self) -> str:

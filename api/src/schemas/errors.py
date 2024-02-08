@@ -1,11 +1,11 @@
-from pydantic import BaseModel, ConfigDict
+from .base import Base
 
 
-class Error(BaseModel):
+class Error(Base):
     location: str
     message: str
     code: int | None = None
 
 
-class ValidationErrorResponse(BaseModel):
+class ValidationErrorResponse(Base):
     detail: list[Error]

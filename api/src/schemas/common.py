@@ -1,14 +1,4 @@
-from pydantic import BaseModel, ConfigDict
-
-
-class Base(BaseModel):
-    """Base Pydantic Model"""
-
-    model_config = ConfigDict(
-        from_attributes=True,
-        extra="ignore",
-        validate_assignment=True,
-    )
+from .base import Base
 
 
 class ResultSchema(Base):

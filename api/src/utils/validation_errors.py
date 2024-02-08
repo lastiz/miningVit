@@ -20,7 +20,7 @@ class AppError:
         headers={"WWW-Authenticate": "Bearer"},
         detail=HTTPErrorDetails(
             location="credentials",
-            message="Could not validate credentials",
+            message="could not validate credentials",
             code=998,
         ),
     )
@@ -28,30 +28,30 @@ class AppError:
         status_code=418,
         detail=HTTPErrorDetails(
             location="user",
-            message="Inactive user",
+            message="inactive user",
             code=999,
         ),
     )
     EMAIL_EXISTS = ValidationErrorDetails(
         loc=["email"],
-        msg="Email already exists",
+        msg="email already exists",
         code=1000,
     )
     USERNAME_EXISTS = ValidationErrorDetails(
         loc=["username"],
-        msg="Username already exists",
+        msg="username already exists",
         code=1001,
     )
     INVALID_AFFILIATE_CODE = ValidationErrorDetails(
         loc=["affiliate_code"],
-        msg="Invalid affiliate code",
+        msg="invalid affiliate code",
         code=1002,
     )
     GENERATING_AFFILIATE_CODE_FAILS = HTTPException(
         status_code=500,
         detail=HTTPErrorDetails(
             location="server",
-            message="Generating affiliate code failse, try later",
+            message="generating affiliate code failse, try later",
             code=1003,
         ),
     )
@@ -59,7 +59,7 @@ class AppError:
         status_code=status.HTTP_400_BAD_REQUEST,
         detail=HTTPErrorDetails(
             location="email_allowed",
-            message="Email not allowed for user",
+            message="email not allowed for user",
             code=1004,
         ),
     )
@@ -67,7 +67,7 @@ class AppError:
         status_code=status.HTTP_400_BAD_REQUEST,
         detail=HTTPErrorDetails(
             location="email_lock",
-            message="Email lock exists. Try after 3 minutes",
+            message="email lock exists. Try after 3 minutes",
             code=1005,
         ),
     )
@@ -75,7 +75,7 @@ class AppError:
         status_code=status.HTTP_400_BAD_REQUEST,
         detail=HTTPErrorDetails(
             location="email",
-            message="Email not registered",
+            message="email not registered",
             code=1006,
         ),
     )
@@ -83,7 +83,7 @@ class AppError:
         status_code=status.HTTP_400_BAD_REQUEST,
         detail=HTTPErrorDetails(
             location="email, reset_token",
-            message="Invalid reset token or email",
+            message="invalid reset token or email",
             code=1007,
         ),
     )
@@ -91,15 +91,15 @@ class AppError:
         status_code=status.HTTP_400_BAD_REQUEST,
         detail=HTTPErrorDetails(
             location="code",
-            message="Invalid verification code",
+            message="invalid verification code",
             code=1008,
         ),
     )
     FAILED_TO_UPDATE_USER = HTTPException(
-        status_code=500,
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         detail=HTTPErrorDetails(
             location="server",
-            message="Failed to update user",
+            message="failed to update user",
             code=1009,
         ),
     )
@@ -114,10 +114,60 @@ class AppError:
 
     # FINANCE ERRORS
     COULD_NOT_GET_FINANCE = HTTPException(
-        status_code=500,
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         detail=HTTPErrorDetails(
             location="server",
-            message="Failed to load user finance",
+            message="failed to load user finance",
             code=1011,
+        ),
+    )
+    INSUFFICIENT_BALANCE = HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail=HTTPErrorDetails(
+            location="balance",
+            message="insufficient user balance",
+            code=1012,
+        ),
+    )
+
+    # MACHINE ERRORS
+    MACHINE_NOT_OWNED = HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail=HTTPErrorDetails(
+            location="purchased_machine_id",
+            message="user does not own this machine",
+            code=1013,
+        ),
+    )
+    MACHINE_NOT_FOUND = HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail=HTTPErrorDetails(
+            location="purchased_machine_id",
+            message="machine not found",
+            code=1014,
+        ),
+    )
+    INVALID_REQUEST_TIME = HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail=HTTPErrorDetails(
+            location="purchased machine.activated_time",
+            message="invalid request time",
+            code=1015,
+        ),
+    )
+    MACHINE_NOT_ACTIVATED = HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail=HTTPErrorDetails(
+            location="purchased machine.activated_time",
+            message="machine not activated",
+            code=1016,
+        ),
+    )
+    MACHINE_ALREADY_PURCHASED = HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail=HTTPErrorDetails(
+            location="machine_coin",
+            message="machine already purchased",
+            code=1017,
         ),
     )

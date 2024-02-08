@@ -1,21 +1,22 @@
-from pydantic import EmailStr, BaseModel
+from pydantic import EmailStr
 
+from .base import Base
 from schemas.user import UserSchema
 
 
-class EmailSchema(BaseModel):
+class EmailSchema(Base):
     email: EmailStr
 
 
-class EmailsSchema(BaseModel):
+class EmailsSchema(Base):
     emails: list[EmailStr]
 
 
-class EmailVerificationSchema(BaseModel):
+class EmailVerificationSchema(Base):
     user: UserSchema
     verification_code: str
 
 
-class EmailResetPasswordSchema(BaseModel):
+class EmailResetPasswordSchema(Base):
     user: UserSchema
     token: str
