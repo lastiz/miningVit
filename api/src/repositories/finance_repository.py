@@ -43,7 +43,7 @@ class FinanceRepository(GenericSqlRepository[Finance]):
         incomes = list(await self._session.scalars(stmt))
         return incomes
 
-    async def add_user_deposit(self, user_id: int, data: dict[str, Any]):
+    async def add_user_deposit(self, user_id: int, data: dict[str, Any]) -> None:
         user_finance = await self.get_user_finance_with(user_id, with_="deposits")
         if user_finance is None:
             raise AppError.COULD_NOT_GET_FINANCE
@@ -51,7 +51,7 @@ class FinanceRepository(GenericSqlRepository[Finance]):
         user_finance.deposits.append(Deposit(**data))
         await self._session.flush()
 
-    async def add_user_income(self, user_id: int, data: dict[str, Any]):
+    async def add_user_income(self, user_id: int, data: dict[str, Any]) -> None:
         user_finance = await self.get_user_finance_with(user_id, with_="incomes")
         if user_finance is None:
             raise AppError.COULD_NOT_GET_FINANCE
@@ -59,7 +59,7 @@ class FinanceRepository(GenericSqlRepository[Finance]):
         user_finance.incomes.append(Income(**data))
         await self._session.flush()
 
-    async def add_user_withdrawal(self, user_id: int, data: dict[str, Any]):
+    async def add_user_withdrawal(self, user_id: int, data: dict[str, Any]) -> None:
         user_finance = await self.get_user_finance_with(user_id, with_="withdrawals")
         if user_finance is None:
             raise AppError.COULD_NOT_GET_FINANCE

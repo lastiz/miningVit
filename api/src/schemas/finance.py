@@ -4,6 +4,7 @@ from utils.enums import TransactionStatus, IncomeType
 
 class FinanceInfoSchema(Base):
     id: int
+    wallet: str | None
     balance: int
     income: int
     affiliate_income: int
@@ -22,6 +23,7 @@ class WithdrawalSchema(Base):
 
 
 class IncomeSchema(Base):
+    status: TransactionStatus
     type: IncomeType
     amount: int
 
@@ -36,3 +38,7 @@ class WithdrawalsSchema(Base):
 
 class IncomesSchema(Base):
     incomes: list[IncomeSchema]
+
+
+class WithdrawInSchema(Base):
+    amount: int

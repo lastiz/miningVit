@@ -1,6 +1,8 @@
 from fastapi import status, HTTPException
 from typing import TypedDict
 
+from config import settings
+
 
 class ValidationErrorDetails(TypedDict):
     loc: list[str]
@@ -169,5 +171,29 @@ class AppError:
             location="machine_coin",
             message="machine already purchased",
             code=1017,
+        ),
+    )
+    LOW_BALANCE = HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail=HTTPErrorDetails(
+            location="amount",
+            message="user balance is too low",
+            code=1018,
+        ),
+    )
+    NO_WALLET = HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail=HTTPErrorDetails(
+            location="user.wallet",
+            message="user wallet is null",
+            code=1019,
+        ),
+    )
+    WITHDRAWAL_LOCK_EXISTS = HTTPException(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        detail=HTTPErrorDetails(
+            location="withdrawal_lock",
+            message=f"withdrawal_lock exists, withdrawals available every {settings.WITHDRAWAL_LOCK_EXPIRE_HOURS} hours",
+            code=1020,
         ),
     )

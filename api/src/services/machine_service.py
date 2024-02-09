@@ -8,6 +8,7 @@ from schemas.finance import FinanceInfoSchema
 from utils.validation_errors import AppError
 from utils.enums import MachineCoin
 from config import settings
+from utils.enums import IncomeType, TransactionStatus
 
 
 class MachineService:
@@ -90,6 +91,8 @@ class MachineService:
         self, user: UserSchema, purchased_machine_id: int
     ) -> None:
         """Updates user Finance.balance accordingly to PurchasedMachine.machine.income
+        Updates PurchasedMachine.activated_time to None
+        Creates Income row in database for this operation
 
         Args:
             user (UserSchema): user data
@@ -120,6 +123,14 @@ class MachineService:
 
         user_finance = FinanceInfoSchema.model_validate(
             await self.db.finance.get_by_filters(user_id=user.id)
+        )
+        await self.db.finance.add_user_income(
+            user.id,
+            data={
+                "type": IncomeType.COMMISSION,
+                "status": TransactionStatus.COMPLETED,
+                "amount": purchased_machine.machine.income,
+            },
         )
         user_finance.balance += purchased_machine.machine.income
         await self.db.finance.update(user_finance.id, user_finance.model_dump())

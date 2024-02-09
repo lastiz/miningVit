@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     VERIFY_KEY_EXPIRE_HOURS: int = 24
     EMAIL_LOCK_EXPIRE_MINUTES: int = 3
     RESET_PASSWORD_TOKEN_EXPIRE_HOURS: int = 1
+    WITHDRAWAL_LOCK_EXPIRE_HOURS: int = 24
 
     # SECRET KEY AND ALGORITHM
     SECRET_KEY: str = "secret"

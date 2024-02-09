@@ -82,6 +82,7 @@ class Finance(Base):
     __repr_attrs__ = ["id", "user_id", "machine_id", "activated_time"]
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    wallet: Mapped[str | None] = mapped_column(String(516))
     balance: Mapped[int] = mapped_column(
         BIGINT(unsigned=True), server_default=text("0")
     )
@@ -138,17 +139,6 @@ class PurchasedMachine(TimeMixin, Base):
     user: Mapped["User"] = relationship(back_populates="machines")
 
 
-class Income(TimeMixin, Base):
-    __repr_attrs__ = ["id", "finance_id", "type", "amount"]
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    type: Mapped[IncomeType]
-    amount: Mapped[int] = mapped_column(BIGINT(unsigned=True))
-    finance_id: Mapped[int] = mapped_column(ForeignKey("finance.id"))
-
-    finance: Mapped["Finance"] = relationship(back_populates="incomes")
-
-
 class Transaction:
     __abstract__: bool = True
 
@@ -156,6 +146,15 @@ class Transaction:
     finance_id: Mapped[int] = mapped_column(ForeignKey("finance.id"))
     status: Mapped[TransactionStatus] = mapped_column(default=TransactionStatus.NEW)
     amount: Mapped[int] = mapped_column(BIGINT(unsigned=True))
+
+
+class Income(Transaction, TimeMixin, Base):
+    __repr_attrs__ = ["id", "finance_id", "type", "amount", "status"]
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    type: Mapped[IncomeType]
+
+    finance: Mapped["Finance"] = relationship(back_populates="incomes")
 
 
 class Deposit(Transaction, TimeMixin, Base):

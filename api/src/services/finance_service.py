@@ -7,8 +7,9 @@ from schemas.finance import (
     WithdrawalsSchema,
     IncomesSchema,
 )
-from schemas.machine import MachineSchema
 from utils.validation_errors import AppError
+from utils.enums import TransactionStatus
+from services.redis_service import RedisService
 
 
 class FinanceService:
@@ -34,3 +35,36 @@ class FinanceService:
     async def get_user_incomes(self, user: UserSchema):
         db_incomes = await self.db.finance.get_user_incomes(user.id)
         return IncomesSchema.model_validate({"incomes": db_incomes})
+
+    async def withdraw_funds(self, user: UserSchema, amount: int) -> None:
+        """Represents withdraw logic. Creates withdrawal record in database
+
+        Args:
+            user (UserSchema): represents user
+            amount (int): represents amount to withdraw
+
+        Raises:
+            AppError.LOW_BALANCE: raises if user balance is too low
+            AppError.NO_WALLET: raises if user has unfilled wallet address
+            AppError.WITHDRAWAL_LOCK_EXISTS: raises if withdrawal lock exists in redis db
+        """
+        user_finance = await self.get_user_finance_info(user)
+        if user_finance.balance < amount:
+            raise AppError.LOW_BALANCE
+
+        if user_finance.wallet is None:
+            raise AppError.NO_WALLET
+
+        withdrawal_lock = await RedisService.get_withdrawal_lock(user.username)
+        if withdrawal_lock:
+            raise AppError.WITHDRAWAL_LOCK_EXISTS
+
+        await self.db.finance.add_user_withdrawal(
+            user_id=user.id,
+            data={
+                "amount": amount,
+                "wallet": user_finance.wallet,
+                "status": TransactionStatus.PENDING,
+            },
+        )
+        await RedisService.save_withdrawal_lock(user.username)

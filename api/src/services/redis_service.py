@@ -18,6 +18,9 @@ class RedisService:
     _AUTH_SESSION_TIME: int = int(
         timedelta(settings.ACCESS_TOKEN_EXPIRE_DAYS).total_seconds()
     )
+    _WITHDRAWAL_LOCK_EXPIRE_HOURS: int = int(
+        timedelta(hours=settings.WITHDRAWAL_LOCK_EXPIRE_HOURS).total_seconds()
+    )
     _repository = redis_repo
 
     @classmethod
@@ -96,3 +99,13 @@ class RedisService:
     async def del_active_session(cls, username: str) -> int | Any:
         key = f"active_session:{username}"
         return await cls._repository.delete(key)
+
+    @classmethod
+    async def save_withdrawal_lock(cls, username: str) -> bool:
+        key = f"withdrawal_lock:{username}"
+        return await cls._set(key, value=1, expire=cls._WITHDRAWAL_LOCK_EXPIRE_HOURS)
+
+    @classmethod
+    async def get_withdrawal_lock(cls, username: str) -> int | None:
+        key = f"withdrawal_lock:{username}"
+        return await cls._get(key)

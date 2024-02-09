@@ -5,11 +5,13 @@ from database.db import DB, get_db
 from schemas.user import UserSchema
 from dependencies.auth import get_current_active_user
 from services.finance_service import FinanceService
+from schemas.common import ResultSchema
 from schemas.finance import (
     FinanceInfoSchema,
     DepositsSchema,
     WithdrawalsSchema,
     IncomesSchema,
+    WithdrawInSchema,
 )
 
 
@@ -46,3 +48,13 @@ async def get_user_incomes(
     db: Annotated[DB, Depends(get_db)],
 ) -> IncomesSchema:
     return await FinanceService(db).get_user_incomes(current_user)
+
+
+@router.post("/withdraw", status_code=201)
+async def withdraw_funds(
+    current_user: Annotated[UserSchema, Depends(get_current_active_user)],
+    db: Annotated[DB, Depends(get_db)],
+    withdraw_data: WithdrawInSchema,
+) -> ResultSchema:
+    await FinanceService(db).withdraw_funds(current_user, withdraw_data.amount)
+    return ResultSchema(result="withdrawal was accepted")

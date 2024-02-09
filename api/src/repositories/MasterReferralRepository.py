@@ -1,5 +1,4 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
 
 from .base import GenericSqlRepository
 from database.models import MasterReferral
