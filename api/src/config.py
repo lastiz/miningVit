@@ -99,6 +99,7 @@ class Settings(BaseSettings):
             "price": 1200,
         },
     ]
+    REFERRAL_SYSTEM: tuple = (0.15, 0, 1, 0.05, 0.03, 0.01)
 
     @property
     def DB_URL(self) -> str:

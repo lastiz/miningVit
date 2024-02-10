@@ -101,3 +101,9 @@ class MasterReferralSchema(Base):
 
 class VerificationCode(Base):
     code: str
+
+
+class Referral(Base):
+    username: str
+    created_at: datetime
+    last_online: datetime

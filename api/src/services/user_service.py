@@ -14,6 +14,7 @@ from schemas.user import (
     MasterReferralSchema,
     UserToSaveSchema,
     ChangePasswordSchema,
+    Referral,
 )
 from schemas.email import EmailSchema
 from utils.security import SecurityHasher, JWTAuthController
@@ -188,3 +189,13 @@ class UserService:
         )
         await RedisService.del_active_session(user.username)
         return UserSchema.model_validate(updated_user)
+
+    async def get_master(self, user: UserSchema) -> UserSchema | None:
+        db_master = await self.db.users.get_master(user.id)
+        if not db_master:
+            return None
+        return UserSchema.model_validate(db_master)
+
+    async def get_referrals(self, user: UserSchema, level: int) -> list[Referral]:
+        db_users = await self.db.users.get_referrals(user.id, level)
+        return [Referral.model_validate(db_user) for db_user in db_users]

@@ -114,7 +114,6 @@ class AppError:
         ),
     )
 
-    # FINANCE ERRORS
     COULD_NOT_GET_FINANCE = HTTPException(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         detail=HTTPErrorDetails(
@@ -131,8 +130,6 @@ class AppError:
             code=1012,
         ),
     )
-
-    # MACHINE ERRORS
     MACHINE_NOT_OWNED = HTTPException(
         status_code=status.HTTP_400_BAD_REQUEST,
         detail=HTTPErrorDetails(
@@ -195,5 +192,13 @@ class AppError:
             location="withdrawal_lock",
             message=f"withdrawal_lock exists, withdrawals available every {settings.WITHDRAWAL_LOCK_EXPIRE_HOURS} hours",
             code=1020,
+        ),
+    )
+    COULD_GET_MASTER_FINANCE = HTTPException(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        detail=HTTPErrorDetails(
+            location="master finance",
+            message=f"failed to load master finance",
+            code=1021,
         ),
     )

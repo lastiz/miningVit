@@ -31,7 +31,7 @@ class UserRepository(GenericSqlRepository[User]):
         exists = await self.list(**kwargs)
         return True if exists else False
 
-    async def get_master(self, user: User) -> User | None:
+    async def get_master(self, user_id: int) -> User | None:
         """Returns User model that represents master of :user
 
         Args:
@@ -43,12 +43,12 @@ class UserRepository(GenericSqlRepository[User]):
         stmt = (
             select(User)
             .join(MasterReferral, onclause=MasterReferral.master_id == User.id)
-            .where(MasterReferral.referral_id == user.id)
+            .where(MasterReferral.referral_id == user_id)
         )
         return await self._session.scalar(stmt)
 
     async def get_referrals(
-        self, user: User, level: int = 1, **filters
+        self, user_id: int, level: int = 1, **filters
     ) -> Sequence[User]:
         """Returns list of users(referrals) of :user and
            filtered with :**filters and
@@ -63,7 +63,7 @@ class UserRepository(GenericSqlRepository[User]):
         if level == 0:
             return []
         # form subquery for referral ids depending on :level
-        subq = (user.id,)
+        subq = (user_id,)
         for _ in range(level):
             subq = select(MasterReferral.referral_id).where(
                 MasterReferral.master_id.in_(subq)

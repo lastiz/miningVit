@@ -9,6 +9,7 @@ from utils.validation_errors import AppError
 from utils.enums import MachineCoin
 from config import settings
 from utils.enums import IncomeType, TransactionStatus
+from services.user_service import UserService
 
 
 class MachineService:
@@ -86,6 +87,46 @@ class MachineService:
         )
         user_finance.balance -= desired_machine.price
         await self.db.finance.update(user_finance.id, user_finance.model_dump())
+        await self.add_referral_rewards_to_masters(user, desired_machine.price)
+
+    async def add_referral_rewards_to_masters(
+        self, user: UserSchema, machine_price: int
+    ) -> None:
+        """Updates balances of user masters and creates income record for rewards
+
+        Args:
+            user (UserSchema): User for whose masters it's needed to add rewards
+            machine_price (int): Price of machine that user purchased
+
+        Raises:
+            AppError.COULD_GET_MASTER_FINANCE: Raises if couldn't get master finance record
+        """
+        master = await UserService(self.db).get_master(user)
+        for reward_percent in settings.REFERRAL_SYSTEM:
+            if not master:  # while user has master
+                return
+
+            db_master_finance = await self.db.finance.get_user_finance(master.id)
+            if db_master_finance is None:
+                raise AppError.COULD_GET_MASTER_FINANCE
+            master_finance = FinanceInfoSchema.model_validate(db_master_finance)
+            affiliate_income = int(machine_price * reward_percent)
+
+            # updating master balance and creation income record
+            master_finance.balance += affiliate_income
+            master_finance.affiliate_income += affiliate_income
+            await self.db.finance.update(master_finance.id, master_finance.model_dump())
+            await self.db.finance.add_user_income(
+                master.id,
+                data={
+                    "type": IncomeType.AFFILIATE,
+                    "status": TransactionStatus.COMPLETED,
+                    "amount": affiliate_income,
+                },
+            )
+
+            # getting master of higher level
+            master = await UserService(self.db).get_master(user)
 
     async def receive_commissions(
         self, user: UserSchema, purchased_machine_id: int
