@@ -68,3 +68,17 @@ class FinanceService:
             },
         )
         await RedisService.save_withdrawal_lock(user.username)
+
+    async def change_wallet(self, user: UserSchema, wallet: str) -> None:
+        """Changes wallet address in fanance table for :user
+
+        Args:
+            user (UserSchema): obj of UserSchema that represents user
+            wallet (str): string that represents new wallet address
+        """
+        user_finance = await self.get_user_finance_info(user)
+        user_finance.wallet = wallet
+        await self.db.finance.update(
+            id=user_finance.id,
+            data=user_finance.model_dump(),
+        )

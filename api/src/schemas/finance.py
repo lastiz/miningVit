@@ -1,3 +1,5 @@
+from pydantic import Field
+
 from .base import Base
 from utils.enums import TransactionStatus, IncomeType
 
@@ -42,3 +44,7 @@ class IncomesSchema(Base):
 
 class WithdrawInSchema(Base):
     amount: int
+
+
+class ChangeWalletSchema(Base):
+    wallet: str = Field(min_length=16, max_length=516)

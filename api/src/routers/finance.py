@@ -12,6 +12,7 @@ from schemas.finance import (
     WithdrawalsSchema,
     IncomesSchema,
     WithdrawInSchema,
+    ChangeWalletSchema,
 )
 
 
@@ -57,4 +58,16 @@ async def withdraw_funds(
     withdraw_data: WithdrawInSchema,
 ) -> ResultSchema:
     await FinanceService(db).withdraw_funds(current_user, withdraw_data.amount)
+    await db.commit()
     return ResultSchema(result="withdrawal was accepted")
+
+
+@router.post("/wallet")
+async def change_wallet(
+    current_user: Annotated[UserSchema, Depends(get_current_active_user)],
+    db: Annotated[DB, Depends(get_db)],
+    wallet_data: ChangeWalletSchema,
+) -> ResultSchema:
+    await FinanceService(db).change_wallet(current_user, wallet_data.wallet)
+    await db.commit()
+    return ResultSchema(result="wallet was changed")
