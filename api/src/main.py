@@ -61,6 +61,7 @@ def create_app() -> FastAPI:
     admin.add_view(views.DepositAdmin)
     admin.add_view(views.WithdrawalAdmin)
     admin.add_view(views.IncomeAdmin)
+    admin.add_view(views.AdvertAdmin)
 
     @app.get("/")
     async def test():

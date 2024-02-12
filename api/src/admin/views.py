@@ -10,6 +10,7 @@ from database.models import (
     Income,
     Withdrawal,
     Machine,
+    Advert,
 )
 from .formatters import FORMATTERS
 from utils.security import SecurityHasher
@@ -312,4 +313,24 @@ class PurchasedMachineAdmin(ModelView, model=PurchasedMachine):
             "fields": ["username", "email", "telegram"],
             "page_size": 15,
         }
+    }
+
+
+class AdvertAdmin(ModelView, model=Advert):
+    name = "Advertising"
+    name_plural = "Advertising"
+    icon = "fa-brands fa-adversal"
+    can_create = True
+    can_edit = True
+    can_delete = True
+    can_view_details = True
+
+    column_list = [
+        Advert.id,
+        Advert.title,
+        Advert.body,
+        Advert.is_visible,
+    ]
+    column_formatters = {
+        Advert.body: lambda m, _: m.body[:70] + "..." if len(m.body) > 70 else m.body
     }
