@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from contextlib import asynccontextmanager
+import uvicorn
+from sqladmin import Admin
 
 # TODO: fix import problems ---------------------------------
 import sys
@@ -18,6 +20,8 @@ from utils.error_handlers import validation_exception_handler
 from services.redis_service import RedisService
 from utils import initiate_data
 from config import settings
+from database.db import engine
+from admin import views
 
 
 # REDIS INIT
@@ -30,21 +34,41 @@ async def lifespan(app: FastAPI):
     await RedisService.close()
 
 
-app = FastAPI(
-    title="MiningVit App",
-    lifespan=lifespan,
-    exception_handlers={RequestValidationError: validation_exception_handler},
-    responses={
-        422: {"description": "Validation Error", "model": ValidationErrorResponse}
-    },
-)
+def create_app() -> FastAPI:
+    app = FastAPI(
+        title="MiningVit App",
+        lifespan=lifespan,
+        exception_handlers={RequestValidationError: validation_exception_handler},
+        responses={
+            422: {"description": "Validation Error", "model": ValidationErrorResponse}
+        },
+    )
+    # routers
+    app.include_router(auth_router, prefix="/auth")
+    app.include_router(user_router, prefix="/api/user")
+    app.include_router(finance_router, prefix="/api/finance")
+    app.include_router(machine_router, prefix="/api/machine")
 
-app.include_router(auth_router, prefix="/auth")
-app.include_router(user_router, prefix="/api/user")
-app.include_router(finance_router, prefix="/api/finance")
-app.include_router(machine_router, prefix="/api/machine")
+    # admin
+    admin = Admin(
+        app, engine, title="MiningVit Admin Panel", base_url="/" + settings.ADMIN_URL
+    )
+    admin.add_view(views.UserAdmin)
+    admin.add_view(views.MasterReferralAdmin)
+    admin.add_view(views.FinanceAdmin)
+    admin.add_view(views.MachineAdmin)
+    admin.add_view(views.PurchasedMachineAdmin)
+    admin.add_view(views.DepositAdmin)
+    admin.add_view(views.WithdrawalAdmin)
+    admin.add_view(views.IncomeAdmin)
+
+    @app.get("/")
+    async def test():
+        return settings.model_dump()
+
+    return app
 
 
-@app.get("/")
-async def test():
-    return settings.model_dump()
+if __name__ == "__main__":
+    app = create_app()
+    uvicorn.run("main:app", reload=True)

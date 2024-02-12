@@ -1,22 +1,27 @@
 import enum
 
 
+class PrintableEnum(enum.Enum):
+    def __str__(self) -> str:
+        return str(self.value)
+
+
 @enum.unique
-class TransactionStatus(str, enum.Enum):
+class TransactionStatus(str, PrintableEnum):
     NEW = "new"
     PENDING = "pending"
     COMPLETED = "completed"
 
 
 @enum.unique
-class IncomeType(str, enum.Enum):
+class IncomeType(str, PrintableEnum):
     BONUS = "bonus"
     AFFILIATE = "affiliate"
     COMMISSION = "commission"
 
 
 @enum.unique
-class MachineCoin(str, enum.Enum):
+class MachineCoin(str, PrintableEnum):
     LTC = "LTC"
     ETC = "ETC"
     PIRL = "PIRL"

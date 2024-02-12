@@ -38,6 +38,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_DAYS: int = 30
 
     # APP SPECIFIC
+    ADMIN_URL: str = "admin"
     ADMIN_NAME: str = "admin"
     ADMIN_EMAIL: str = "admin@admin.com"
     ADMIN_PASSWORD: str = "admin"

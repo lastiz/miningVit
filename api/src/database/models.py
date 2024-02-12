@@ -79,7 +79,7 @@ class User(TimeMixin, Base):
 
 # ADDITIONAL TABLES
 class Finance(Base):
-    __repr_attrs__ = ["id", "user_id", "machine_id", "activated_time"]
+    __repr_attrs__ = ["id", "user_id", "balance", "income", "wallet"]
 
     id: Mapped[int] = mapped_column(primary_key=True)
     wallet: Mapped[str | None] = mapped_column(String(516))
@@ -128,7 +128,7 @@ class Machine(Base):
 
 class PurchasedMachine(TimeMixin, Base):
     __tablename__: declared_attr | str = "purchased_machine"
-    __repr_attrs__ = ["user_id", "machine_id", "activated_time"]
+    __repr_attrs__ = ["id", "user_id", "machine_id", "activated_time"]
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))

@@ -19,6 +19,7 @@ pyjwt = "^2.8.0"
 fastapi-mail = "^1.4.1"
 redis = "^5.0.1"
 six = "^1.16.0"
+sqladmin = {extras = ["full"], version = "^0.16.0"}
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.4.4"
