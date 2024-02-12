@@ -16,7 +16,7 @@ from database.models import (
 
 
 class NotImplementedFormatterError(Exception):
-    ...
+    pass
 
 
 def to_dollars(val: int) -> float:
