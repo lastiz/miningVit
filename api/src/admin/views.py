@@ -168,8 +168,13 @@ class DepositAdmin(ModelView, model=Deposit):
     ]
     column_labels = {
         "finance.user": "User",
+        "finance.user_id": "User_id",
     }
-    column_searchable_list = [Deposit.status, Deposit.platform]
+    column_searchable_list = [
+        "finance.user_id",
+        Deposit.status,
+        Deposit.platform,
+    ]
     column_sortable_list = [
         "created_at",
     ]
@@ -203,8 +208,12 @@ class WithdrawalAdmin(ModelView, model=Withdrawal):
     ]
     column_labels = {
         "finance.user": "User",
+        "finance.user_id": "User_id",
     }
-    column_searchable_list = [Withdrawal.status]
+    column_searchable_list = [
+        "finance.user_id",
+        Withdrawal.status,
+    ]
     column_sortable_list = [
         "created_at",
     ]
@@ -238,8 +247,10 @@ class IncomeAdmin(ModelView, model=Income):
     ]
     column_labels = {
         "finance.user": "User",
+        "finance.user_id": "User_id",
     }
     column_searchable_list = [
+        "finance.user_id",
         Income.type,
         Income.status,
     ]
